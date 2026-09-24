@@ -542,6 +542,28 @@ body[data-nav="hidden"] .bottomnav { display: none; }
 
 .watch { padding-bottom: 24px; }
 
+.player-zone { position: relative; }
+
+.ambient { display: none; }
+
+body[data-theme="dark"] .ambient {
+  display: block;
+  position: absolute;
+  left: -14%;
+  right: -14%;
+  top: 22%;
+  bottom: -40px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(44px) saturate(1.6) brightness(.75);
+  opacity: .5;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.player-zone .player { z-index: 1; }
+.watch .w-title, .watch .w-meta { position: relative; z-index: 1; }
+
 .player {
   position: relative;
   width: 100%;
@@ -868,7 +890,7 @@ body[data-nav="hidden"] .bottomnav { display: none; }
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.w-channel .ch-subs { font-size: 12.5px; color: var(--text-2); margin-top: 1px; }
+.w-channel .ch-subs { font-size: 12.5px; color: var(--text-2); margin-top: 1px; white-space: nowrap; }
 
 .btn-sub {
   height: 36px;

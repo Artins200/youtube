@@ -892,39 +892,42 @@ async function viewWatch(view, id) {
 
   view.innerHTML = `
   <div class="watch">
-    <div class="player" id="player">
-      <video id="wvideo" playsinline preload="metadata"></video>
-      <div class="pl-tap">
-        <div class="pl-zone left"></div>
-        <div class="pl-zone center"></div>
-        <div class="pl-zone right"></div>
-      </div>
-      <div class="pl-ctl" id="plctl">
-        <div class="pl-seek-flash left" id="flash-l">${icon('replay')}<span>10 сек</span></div>
-        <div class="pl-seek-flash right" id="flash-r">${icon('replay')}<span>10 сек</span></div>
-        <div class="pl-center-btn" id="pl-center">${icon('play', 'icon--fill')}</div>
-        <div class="pl-bottom">
-          <div class="pl-bar-wrap" id="pl-bar-wrap">
-            <div class="pl-bar">
-              <div class="buf" id="pl-buf"></div>
-              <div class="played" id="pl-played"></div>
-              <div class="knob" id="pl-knob"></div>
+    <div class="player-zone">
+      <div class="ambient" style="background-image:url(${thumbURL(v)})"></div>
+      <div class="player" id="player">
+        <video id="wvideo" playsinline preload="metadata"></video>
+        <div class="pl-tap">
+          <div class="pl-zone left"></div>
+          <div class="pl-zone center"></div>
+          <div class="pl-zone right"></div>
+        </div>
+        <div class="pl-ctl" id="plctl">
+          <div class="pl-seek-flash left" id="flash-l">${icon('replay')}<span>10 сек</span></div>
+          <div class="pl-seek-flash right" id="flash-r">${icon('replay')}<span>10 сек</span></div>
+          <div class="pl-center-btn" id="pl-center">${icon('play', 'icon--fill')}</div>
+          <div class="pl-bottom">
+            <div class="pl-bar-wrap" id="pl-bar-wrap">
+              <div class="pl-bar">
+                <div class="buf" id="pl-buf"></div>
+                <div class="played" id="pl-played"></div>
+                <div class="knob" id="pl-knob"></div>
+              </div>
+            </div>
+            <div class="pl-row">
+              <div class="pl-time" id="pl-time">0:00 / ${fmtDur(v.duration)}</div>
+              <button class="pl-btn" id="pl-speed" aria-label="Скорость">${icon('gear')}</button>
+              <button class="pl-btn" id="pl-fs" aria-label="На весь экран">${icon('fs')}</button>
             </div>
           </div>
-          <div class="pl-row">
-            <div class="pl-time" id="pl-time">0:00 / ${fmtDur(v.duration)}</div>
-            <button class="pl-btn" id="pl-speed" aria-label="Скорость">${icon('gear')}</button>
-            <button class="pl-btn" id="pl-fs" aria-label="На весь экран">${icon('fs')}</button>
-          </div>
         </div>
+        <div class="pl-anim" id="pl-anim">${icon('play', 'icon--fill')}</div>
+        <button class="pl-back" id="pl-back" aria-label="Назад">${icon('back')}</button>
       </div>
-      <div class="pl-anim" id="pl-anim">${icon('play', 'icon--fill')}</div>
-      <button class="pl-back" id="pl-back" aria-label="Назад">${icon('back')}</button>
     </div>
 
     <h1 class="w-title">${esc(v.title)}</h1>
     <div class="w-meta">
-      <span>${fmtViews(v.views)} • ${timeAgo(v.createdAt)}</span>
+      <span>${fmtViews(v.views)} • ${timeAgo(v.createdAt)}</span><span class="more-link" data-act="desc-toggle">…ещё</span>
     </div>
 
     <div class="w-actions">
@@ -949,7 +952,7 @@ async function viewWatch(view, id) {
       ${avatarHTML(v.channelName, '', S.settings.channelColor)}
       <div class="ch-text" data-act="open-channel" data-ch="${esc(v.channelName)}">
         <div class="ch-name">${esc(v.channelName)}</div>
-        <div class="ch-subs">${fmtSubs(1)} • ${chCount} ${plural(chCount, 'видео', 'видео', 'видео')}</div>
+        <div class="ch-subs">${fmtSubs(1)}</div>
       </div>
       <button class="btn-sub ${subOn ? 'subed' : ''}" data-act="sub" data-ch="${esc(v.channelName)}">
         ${subOn ? `${icon('bell')}Вы подписаны${icon('chev-d')}` : 'Подписаться'}
