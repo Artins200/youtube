@@ -1,0 +1,17 @@
+{
+  "name": "youtube-local-build-tools",
+  "private": true,
+  "type": "module",
+  "description": "Fallback v2/v3 signing for Android builds without SDK apksigner",
+  "dependencies": {
+    "apk_sign_ts": "1.0.1"
+  },
+  "scripts": {
+    "test": "node --test ../tests/*.test.cjs",
+    "test:browser": "node ../tests/browser.mjs"
+  },
+  "devDependencies": {
+    "fake-indexeddb": "6.2.5",
+    "playwright": "1.63.0"
+  }
+}

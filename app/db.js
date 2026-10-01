@@ -42,20 +42,27 @@ const DB = (() => {
     r.onerror = () => rej(r.error);
   });
 
-  async function put(store, val) {
+  async function mutate(store, action) {
     const db = await open();
-    return rq(db.transaction(store, 'readwrite').objectStore(store).put(val));
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(store, 'readwrite');
+      let result;
+      transaction.oncomplete = () => resolve(result);
+      transaction.onabort = () => reject(transaction.error || new Error('Storage transaction aborted'));
+      transaction.onerror = () => reject(transaction.error || new Error('Storage write failed'));
+      const request = action(transaction.objectStore(store));
+      request.onsuccess = () => { result = request.result; };
+    });
   }
+
+  const put = (store, value) => mutate(store, (target) => target.put(value));
 
   async function get(store, key) {
     const db = await open();
     return rq(db.transaction(store, 'readonly').objectStore(store).get(key));
   }
 
-  async function del(store, key) {
-    const db = await open();
-    return rq(db.transaction(store, 'readwrite').objectStore(store).delete(key));
-  }
+  const del = (store, key) => mutate(store, (target) => target.delete(key));
 
   async function all(store) {
     const db = await open();
@@ -68,10 +75,7 @@ const DB = (() => {
     return rq(st.index(index).getAll(value));
   }
 
-  async function clear(store) {
-    const db = await open();
-    return rq(db.transaction(store, 'readwrite').objectStore(store).clear());
-  }
+  const clear = (store) => mutate(store, (target) => target.clear());
 
   /* ---- удобное API ---- */
 

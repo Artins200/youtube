@@ -1,43 +1,37 @@
-/* Локальное приложение: кэшируем все ресурсы, чтобы работать без интернета. */
-const CACHE = 'ytlocal-v1';
+/* Кэшируем ТОЛЬКО оболочку приложения. Никаких потоков, ключей или ответов API. */
+const CACHE = 'ytlocal-shell-v1.1.0';
 const ASSETS = [
-  './',
-  'index.html',
-  'styles.css',
-  'app.js',
-  'db.js',
-  'manifest.webmanifest',
-  'icons/icon-192.png',
-  'icons/icon-512.png',
-  'icons/icon-maskable-512.png',
-  'icons/apple-touch-icon.png'
+  './', 'index.html', 'styles.css', 'media.js', 'db.js', 'native.js', 'youtube.js', 'app.js',
+  'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png',
+  'icons/icon-maskable-512.png', 'icons/apple-touch-icon.png',
+  ...['latin', 'cyrillic'].flatMap((subset) => [400, 500, 700].map((weight) => `fonts/roboto-${subset}-${weight}-normal.woff2`))
 ];
-
-self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+const STATIC = new Set(ASSETS.map((path) => new URL(path, self.location).pathname));
+const offlineClients = new Map();
+self.addEventListener('install', (event) => {
+  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
 });
-
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
-      .then(() => self.clients.claim())
-  );
+self.addEventListener('activate', (event) => {
+  event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((key) => key !== CACHE && key.startsWith('ytlocal-')).map((key) => caches.delete(key)))).then(() => self.clients.claim()));
 });
-
-self.addEventListener('fetch', (e) => {
-  const req = e.request;
-  if (req.method !== 'GET') return;
-  e.respondWith(
-    caches.match(req, { ignoreSearch: true }).then((hit) => {
-      if (hit) return hit;
-      return fetch(req).then((res) => {
-        if (res.ok && new URL(req.url).origin === self.location.origin) {
-          const copy = res.clone();
-          caches.open(CACHE).then((c) => c.put(req, copy));
-        }
-        return res;
-      }).catch(() => caches.match('index.html'));
-    })
-  );
+self.addEventListener('message', (event) => {
+  if (event.data?.type === 'SET_OFFLINE' && event.source?.id) offlineClients.set(event.source.id, !!event.data.enabled);
+});
+self.addEventListener('fetch', (event) => {
+  const request = event.request, url = new URL(request.url);
+  if (request.method !== 'GET') return;
+  if (url.origin !== self.location.origin) {
+    if (offlineClients.get(event.clientId)) event.respondWith(Promise.resolve(new Response('Offline mode', { status: 503 })));
+    return;
+  }
+  if (!STATIC.has(url.pathname) && request.mode !== 'navigate') return;
+  event.respondWith(caches.open(CACHE).then(async (cache) => {
+    const hit = await cache.match(request, { ignoreSearch: true });
+    if (hit) return hit;
+    try { return await fetch(request); }
+    catch (error) {
+      if (request.mode === 'navigate') return (await cache.match('index.html')) || Response.error();
+      return Response.error();
+    }
+  }));
 });

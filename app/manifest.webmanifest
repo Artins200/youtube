@@ -1,7 +1,7 @@
 {
-  "name": "YouTube",
-  "short_name": "YouTube",
-  "description": "Локальный видеоплеер в стиле YouTube. Ваши видео хранятся только на устройстве.",
+  "name": "YouTube Local",
+  "short_name": "YouTube Local",
+  "description": "Локальные видео и Shorts, офлайн-режим и онлайн-просмотр YouTube. Самостоятельный клиент.",
   "lang": "ru",
   "start_url": "./",
   "scope": "./",

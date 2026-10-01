@@ -1,0 +1,34 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'app.ytlocal.player'
+    compileSdk 33
+
+    defaultConfig {
+        applicationId 'app.ytlocal.player'
+        minSdk 24
+        targetSdk 33
+        versionCode 2
+        versionName '1.1.0'
+    }
+
+    // Нативная оболочка + та же версия интерфейса, что и в каталоге app/.
+    sourceSets.main.assets.srcDirs += "$buildDir/generated/web-assets"
+}
+
+tasks.register('syncWebAssets', Sync) {
+    from('../../app') {
+        include 'index.html', 'styles.css', 'app.js', 'db.js', 'media.js', 'native.js', 'youtube.js', 'sw.js',
+                'manifest.webmanifest', 'icons/*.png', 'fonts/*'
+        into 'www'
+    }
+    into "$buildDir/generated/web-assets"
+}
+
+tasks.named('preBuild') { dependsOn 'syncWebAssets' }
+tasks.matching { it.name.startsWith('merge') && it.name.endsWith('Assets') }.configureEach {
+    dependsOn 'syncWebAssets'
+}
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }

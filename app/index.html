@@ -8,11 +8,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="YouTube">
-  <meta name="description" content="Локальный видеоплеер в стиле YouTube. Ваши видео хранятся только на устройстве.">
+  <meta name="description" content="Локальные видео, Shorts и онлайн-просмотр YouTube. Самостоятельный клиент.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https:; img-src 'self' data: blob: https:; media-src 'self' blob: content: https:; frame-src https:; font-src 'self'; object-src 'none'; base-uri 'self'">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" type="image/png" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-  <title>YouTube</title>
+  <title>YouTube Local</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body data-theme="light">
@@ -20,12 +21,13 @@
 <!-- ============ SVG-спрайт иконок (стиль YouTube) ============ -->
 <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
-    <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 10.6 12 3.8l8 6.8V20a.9.9 0 0 1-.9.9H15.4V14h-6.8v6.9H4.9A.9.9 0 0 1 4 20z"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="m12 3-9 8v10h6v-7h6v7h6V11z"/></symbol>
+    <symbol id="i-home-outline" viewBox="0 0 24 24"><path d="m12 3-9 8v10h6v-7h6v7h6V11z"/></symbol>
     <symbol id="i-shorts" viewBox="0 0 24 24"><path d="M10 14.65v-5.3L15 12l-5 2.65zm7.77-4.33-1.2-.5L18 9.06c1.84-.96 2.53-3.23 1.56-5.06s-3.24-2.53-5.07-1.56L6 6.94c-1.29.68-2.07 2.04-2 3.49.07 1.42.93 2.67 2.22 3.25l1.2.5L6 14.93c-1.83.97-2.53 3.24-1.56 5.07.97 1.83 3.24 2.53 5.07 1.56l8.5-4.5c1.29-.68 2.06-2.04 1.99-3.49-.07-1.42-.94-2.68-2.23-3.25z"/></symbol>
     <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5.2v13.6M5.2 12h13.6"/></symbol>
     <symbol id="i-subs" viewBox="0 0 24 24"><path d="M6 4.5h12M4.5 8.5h15"/><path d="M4.6 11.9h14.8a1.4 1.4 0 0 1 1.4 1.4v6.3a1.4 1.4 0 0 1-1.4 1.4H4.6a1.4 1.4 0 0 1-1.4-1.4v-6.3a1.4 1.4 0 0 1 1.4-1.4z"/><path d="m10.2 14.2 4.8 2.7-4.8 2.7z"/></symbol>
     <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.9"/><path d="m16 16 5 5"/></symbol>
-    <symbol id="i-cast" viewBox="0 0 24 24"><path d="M2.5 5.5h19v13h-8.2"/><path d="M2.5 18.5h5c0-2.2-1.8-4-4-4m0 0c-2.8 0-5 2.2-5 5m0 0"/></symbol>
+    <symbol id="i-cast" viewBox="0 0 24 24"><path d="M3 6V4h18v14h-7M2 13a8 8 0 0 1 8 8M2 17a4 4 0 0 1 4 4"/><circle cx="2" cy="21" r="1" fill="currentColor" stroke="none"/></symbol>
     <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5 11.5a7 7 0 0 0 14 0M12 18.5v3M9 21.5h6"/></symbol>
     <symbol id="i-back" viewBox="0 0 24 24"><path d="m14.5 4.5-7.5 7.5 7.5 7.5"/></symbol>
     <symbol id="i-chev-r" viewBox="0 0 24 24"><path d="m9.5 4.5 7.5 7.5-7.5 7.5"/></symbol>
@@ -62,11 +64,20 @@
     <symbol id="i-folder-up" viewBox="0 0 24 24"><path d="M3 6.8A1.8 1.8 0 0 1 4.8 5h4l2 2.4h8.4A1.8 1.8 0 0 1 21 9.2v8a1.8 1.8 0 0 1-1.8 1.8H4.8A1.8 1.8 0 0 1 3 17.2z"/><path d="M12 17v-5m0 0-2 2m2-2 2 2"/></symbol>
     <symbol id="i-music" viewBox="0 0 24 24"><circle cx="7" cy="17.5" r="2.8"/><circle cx="17.5" cy="15.5" r="2.8"/><path d="M9.8 17.5v-9l10.5-2v9"/></symbol>
     <symbol id="i-comment" viewBox="0 0 24 24"><path d="M4.5 4.5h15a1.5 1.5 0 0 1 1.5 1.5v10a1.5 1.5 0 0 1-1.5 1.5H9l-4.5 4V6a1.5 1.5 0 0 1 1.5-1.5z"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="m9 3 1-1h4l1 1 .5 3 2.5 1.5 2.8-.7 1.7 3-.8 1.8-2.2 1.9v3L21 18l-2 3-3-.7-2 1.2H10l-2-1.2-3 .7-2-3 2.3-2.5v-3L3 10.7l1.7-3 2.8.7L10 6z"/></symbol>
+    <symbol id="i-wifi-off" viewBox="0 0 24 24"><path d="m3 3 18 18M2 8a17 17 0 0 1 4-2M10 5.5A17 17 0 0 1 22 8M5 12a11 11 0 0 1 5-2M15 10a11 11 0 0 1 4 2M8.5 16a5 5 0 0 1 5-1.5"/><circle cx="12" cy="20" r="1" fill="currentColor"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18M5 6.5h14M5 17.5h14"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="m9 15 6-6M9 7l3-3a5 5 0 0 1 7 7l-3 3M8 10l-3 3a5 5 0 0 0 7 7l3-3"/></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="9" r="5"/><path d="m12 12 8 8h2v-4l-2-2-2 2-2-2"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 2 9 4v6c0 5-9 10-9 10S3 17 3 12V6z"/><path d="m7 12 3 3 7-7"/></symbol>
+    <symbol id="i-volume" viewBox="0 0 24 24"><path d="M3 9h4l5-5v16l-5-5H3zM16 8a6 6 0 0 1 0 8M19 5a10 10 0 0 1 0 14"/></symbol>
+    <symbol id="i-volume-off" viewBox="0 0 24 24"><path d="M3 9h4l5-5v16l-5-5H3zM17 9l5 6M22 9l-5 6"/></symbol>
   </defs>
 </svg>
 
 <div id="app">
   <header id="topbar" class="topbar"></header>
+  <div id="connection-banner" class="connection-banner" role="status" hidden></div>
   <main id="view" class="view"></main>
   <nav id="bottomnav" class="bottomnav">
     <button class="nav-item" data-act="tab" data-tab="home" aria-label="Главная">
@@ -75,7 +86,7 @@
     <button class="nav-item" data-act="tab" data-tab="shorts" aria-label="Shorts">
       <svg class="icon nav-ic icon--fill"><use href="#i-shorts"/></svg><span class="nav-label">Shorts</span>
     </button>
-    <button class="nav-item nav-create" data-act="upload" aria-label="Добавить видео">
+    <button class="nav-item nav-create" data-act="upload" aria-label="Создать">
       <span class="create-btn"><svg class="icon"><use href="#i-plus"/></svg></span>
     </button>
     <button class="nav-item" data-act="tab" data-tab="subs" aria-label="Подписки">
@@ -94,7 +105,10 @@
 
 <div id="toast-host" aria-live="polite"></div>
 
+<script src="media.js"></script>
 <script src="db.js"></script>
+<script src="native.js"></script>
+<script src="youtube.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
